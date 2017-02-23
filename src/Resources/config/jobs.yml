@@ -5,6 +5,14 @@ parameters:
     pim_installer.fixture_loader.job_loader.config_file: 'PimExcelInitBundle/Resources/config/fixtures_jobs.yml'
 
 services:
+    pim_excel_installer.job.locales_access_fixture:
+        class: '%pim_connector.step.tasklet.class%'
+        arguments:
+            - 'locales_access'
+            - '@event_dispatcher'
+            - '@akeneo_batch.job_repository'
+            - '@pim_excel_installer.step.locales_access_tasklet'
+
     pim_excel_installer.job.excel_init_fixture:
         class: '%pim_connector.job.simple_job.class%'
         arguments:

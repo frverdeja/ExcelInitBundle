@@ -1,4 +1,5 @@
 parameters:
+    pim_excel_installer.fixture_tasklet.locales_access.class: Pim\Bundle\ExcelInitBundle\Tasklet\LocalesAccessTasklet
 
 services:
     pim_excel_installer.step.init.currencies:
@@ -122,3 +123,10 @@ services:
             - '@pim_excel_installer.reader.xls_init.family'
             - '@pim_connector.processor.denormalization.family'
             - '@pim_connector.writer.database.family'
+
+    pim_excel_installer.step.locales_access_tasklet:
+        class: '%pim_excel_installer.fixture_tasklet.locales_access.class%'
+        arguments:
+            - '@pim_catalog.repository.locale'
+            - '@pim_user.repository.group'
+            - '@pimee_security.manager.locale_access'
