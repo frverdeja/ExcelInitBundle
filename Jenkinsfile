@@ -38,17 +38,23 @@ stage("Checkout") {
        stash "pim_enterprise_dev"
     }
 
-    parallel community: {
+    parallel
+    community: {
         node('docker') {
             deleteDir()
             docker.image("carcel/php:5.6").inside("-v /home/akeneo/.composer:/home/akeneo/.composer -e COMPOSER_HOME=/home/akeneo/.composer") {
                 unstash "pim_community_dev"
-                sh "composer require akeneo/excel-init-bundle dev-jenkins --optimize-autoloader --no-interaction --no-progress --prefer-dist"
+                dir("vendor/akeneo/excel-init-bundle") {
+                    unstash "excel_init"
+                }
+                //sh "composer require akeneo/excel-init-bundle dev-jenkins --optimize-autoloader --no-interaction --no-progress --prefer-dist"
                 stash "pim_community_dev_full"
             }
             deleteDir()
         }
-    }, enterprise: {
+    }
+    /*,
+    enterprise: {
         node('docker') {
             deleteDir()
             docker.image("carcel/php:5.6").inside("-v /home/akeneo/.composer:/home/akeneo/.composer -e COMPOSER_HOME=/home/akeneo/.composer") {
@@ -58,20 +64,20 @@ stage("Checkout") {
             }
             deleteDir()
         }
-    }
+    }*/
 }
 
 if (launchUnitTests.equals("yes")) {
     stage("Unit tests") {
         def tasks = [:]
 
-        tasks["phpspec-5.6"] = {runPhpSpecTest("5.6")}
-        tasks["phpspec-7.0"] = {runPhpSpecTest("7.0")}
-        tasks["phpspec-7.1"] = {runPhpSpecTest("7.1")}
-
-        tasks["php-cs-fixer-5.6"] = {runPhpCsFixerTest("5.6")}
-        tasks["php-cs-fixer-7.0"] = {runPhpCsFixerTest("7.0")}
-        tasks["php-cs-fixer-7.1"] = {runPhpCsFixerTest("7.1")}
+//        tasks["phpspec-5.6"] = {runPhpSpecTest("5.6")}
+//        tasks["phpspec-7.0"] = {runPhpSpecTest("7.0")}
+//        tasks["phpspec-7.1"] = {runPhpSpecTest("7.1")}
+//
+//        tasks["php-cs-fixer-5.6"] = {runPhpCsFixerTest("5.6")}
+//        tasks["php-cs-fixer-7.0"] = {runPhpCsFixerTest("7.0")}
+//        tasks["php-cs-fixer-7.1"] = {runPhpCsFixerTest("7.1")}
 
         parallel tasks
     }
@@ -81,7 +87,7 @@ if (launchIntegrationTests.equals("yes")) {
     stage("Integration tests") {
         def tasks = [:]
 
-        tasks["phpunit-5.6"] = {runIntegrationTest("5.6")}
+//        tasks["phpunit-5.6"] = {runIntegrationTest("5.6")}
         tasks["phpunit-7.0"] = {runIntegrationTest("7.0")}
 
         parallel tasks
@@ -148,6 +154,7 @@ def runIntegrationTest(version) {
                 sh "./app/console --env=test pim:install --force"
             }
         }
+        /*
         docker.image("mysql:5.5").withRun("--name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USER=akeneo_pim -e MYSQL_PASSWORD=akeneo_pim -e MYSQL_DATABASE=akeneo_pim") {
             docker.image("carcel/php:${version}").inside("--link mysql:mysql -v /home/akeneo/.composer:/home/akeneo/.composer -e COMPOSER_HOME=/home/akeneo/.composer") {
                 unstash "pim_enterprise_dev_full"
@@ -167,5 +174,6 @@ def runIntegrationTest(version) {
                 sh "./app/console --env=test pim:install --force"
             }
         }
+        */
     }
 }
