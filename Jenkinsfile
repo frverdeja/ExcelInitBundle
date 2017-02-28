@@ -144,7 +144,7 @@ def runIntegrationTest(version) {
                     sh "composer require --no-update alcaeus/mongo-php-adapter"
                 }
 
-                sh "composer require --no-update phpunit/phpunit akeneo/excel-init-bundle"
+                sh "composer require --no-update phpunit/phpunit"
                 sh "composer update --ignore-platform-reqs --optimize-autoloader --no-interaction --no-progress --prefer-dist"
 
                 dir("vendor/akeneo/excel-init-bundle") {
