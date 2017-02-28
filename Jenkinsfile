@@ -46,7 +46,6 @@ stage("Checkout") {
                 dir("vendor/akeneo/excel-init-bundle") {
                     unstash "excel_init"
                 }
-                sh "ls vendor/akeneo"
                 stash "pim_community_dev_full"
             }
             deleteDir()
@@ -135,6 +134,7 @@ def runIntegrationTest(version) {
         docker.image("mysql:5.5").withRun("--name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USER=akeneo_pim -e MYSQL_PASSWORD=akeneo_pim -e MYSQL_DATABASE=akeneo_pim") {
             docker.image("carcel/php:${version}").inside("--link mysql:mysql -v /home/akeneo/.composer:/home/akeneo/.composer -e COMPOSER_HOME=/home/akeneo/.composer") {
                 unstash "pim_community_dev_full"
+                sh "ls vendor/akeneo"
 
                 if (version != "5.6") {
                     sh "composer require --no-update alcaeus/mongo-php-adapter"
