@@ -115,9 +115,10 @@ def runIntegrationTest(version) {
                     sh "composer require --no-update alcaeus/mongo-php-adapter"
                 }
 
-                sh "composer require --no-update phpunit/phpunit akeneo/excel-init-bundle"
+                sh "composer require --no-update phpunit/phpunit"
                 sh "composer update --ignore-platform-reqs --optimize-autoloader --no-interaction --no-progress --prefer-dist"
 
+                sh "composer require --no-update akeneo/excel-init-bundle"
                 dir("vendor/akeneo/excel-init-bundle") {
                     unstash "excel_init"
                 }
@@ -132,6 +133,9 @@ def runIntegrationTest(version) {
                 sh "./app/console --env=test pim:install --force"
             }
         }
+    }
+    node('docker') {
+        deleteDir()
         docker.image("mysql:5.5").withRun("--name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USER=akeneo_pim -e MYSQL_PASSWORD=akeneo_pim -e MYSQL_DATABASE=akeneo_pim") {
             docker.image("carcel/php:${version}").inside("--link mysql:mysql -v /home/akeneo/.composer:/home/akeneo/.composer -e COMPOSER_HOME=/home/akeneo/.composer") {
                 unstash "pim_enterprise"
