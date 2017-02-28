@@ -38,8 +38,7 @@ stage("Checkout") {
        stash "pim_enterprise_dev"
     }
 
-    parallel
-    community: {
+    parallel community: {
         node('docker') {
             deleteDir()
             docker.image("carcel/php:5.6").inside("-v /home/akeneo/.composer:/home/akeneo/.composer -e COMPOSER_HOME=/home/akeneo/.composer") {
@@ -47,13 +46,12 @@ stage("Checkout") {
                 dir("vendor/akeneo/excel-init-bundle") {
                     unstash "excel_init"
                 }
-                //sh "composer require akeneo/excel-init-bundle dev-jenkins --optimize-autoloader --no-interaction --no-progress --prefer-dist"
+                sh "ls vendor/akeneo"
                 stash "pim_community_dev_full"
             }
             deleteDir()
         }
-    },
-    enterprise: {
+    },enterprise: {
         node('docker') {
             deleteDir()
             docker.image("carcel/php:5.6").inside("-v /home/akeneo/.composer:/home/akeneo/.composer -e COMPOSER_HOME=/home/akeneo/.composer") {
