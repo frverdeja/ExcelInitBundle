@@ -54,8 +54,7 @@ stage("Checkout") {
             }
             deleteDir()
         }
-    }
-    /*,
+    },
     enterprise: {
         node('docker') {
             deleteDir()
@@ -66,7 +65,7 @@ stage("Checkout") {
             }
             deleteDir()
         }
-    }*/
+    }
 }
 
 if (launchUnitTests.equals("yes")) {
