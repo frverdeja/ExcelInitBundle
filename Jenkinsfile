@@ -59,8 +59,11 @@ if (launchIntegrationTests.equals("yes")) {
     stage("Integration tests") {
         def tasks = [:]
 
-        tasks["phpunit-5.6"] = {runIntegrationTest("5.6")}
-        tasks["phpunit-7.0"] = {runIntegrationTest("7.0")}
+        tasks["phpunit-5.6-ce"] = {runIntegrationTest("5.6")}
+        tasks["phpunit-7.0-ce"] = {runIntegrationTest("7.0")}
+
+        tasks["phpunit-5.6-ee"] = {runIntegrationTestEE("5.6")}
+        tasks["phpunit-7.0-ee"] = {runIntegrationTestEE("7.0")}
 
         parallel tasks
     }
@@ -115,10 +118,9 @@ def runIntegrationTest(version) {
                     sh "composer require --no-update alcaeus/mongo-php-adapter"
                 }
 
-                sh "composer require --no-update phpunit/phpunit"
+                sh "composer require --no-update phpunit/phpunit akeneo/excel-init-bundle"
                 sh "composer update --ignore-platform-reqs --optimize-autoloader --no-interaction --no-progress --prefer-dist"
 
-                sh "composer require --no-update akeneo/excel-init-bundle"
                 dir("vendor/akeneo/excel-init-bundle") {
                     unstash "excel_init"
                 }
@@ -134,6 +136,9 @@ def runIntegrationTest(version) {
             }
         }
     }
+}
+
+def runIntegrationTestEE(version) {
     node('docker') {
         deleteDir()
         docker.image("mysql:5.5").withRun("--name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_USER=akeneo_pim -e MYSQL_PASSWORD=akeneo_pim -e MYSQL_DATABASE=akeneo_pim") {
@@ -144,7 +149,7 @@ def runIntegrationTest(version) {
                     sh "composer require --no-update alcaeus/mongo-php-adapter"
                 }
 
-                sh "composer require --no-update phpunit/phpunit"
+                sh "composer require --no-update phpunit/phpunit akeneo/excel-init-bundle"
                 sh "composer update --ignore-platform-reqs --optimize-autoloader --no-interaction --no-progress --prefer-dist"
 
                 dir("vendor/akeneo/excel-init-bundle") {
