@@ -43,6 +43,7 @@ stage("Checkout") {
             deleteDir()
             docker.image("carcel/php:5.6").inside("-v /home/akeneo/.composer:/home/akeneo/.composer -e COMPOSER_HOME=/home/akeneo/.composer") {
                 unstash "pim_community_dev"
+                sh "composer require akeneo/excel-init-bundle dev-master --no-update"
                 dir("vendor/akeneo/excel-init-bundle") {
                     unstash "excel_init"
                 }
@@ -142,6 +143,7 @@ def runIntegrationTest(version) {
 
                 sh "composer require --no-update phpunit/phpunit"
                 sh "composer update --ignore-platform-reqs --optimize-autoloader --no-interaction --no-progress --prefer-dist"
+                sh "ls vendor/akeneo"
                 sh "cp app/config/parameters.yml.dist app/config/parameters_test.yml"
                 sh "sed -i 's/database_host:     localhost/database_host:     mysql/' app/config/parameters_test.yml"
                 sh "echo '' >> app/config/parameters_test.yml"
