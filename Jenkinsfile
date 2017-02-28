@@ -31,13 +31,11 @@ stage("Checkout") {
         ])
         stash "pim_community_dev"
 
-/*
        checkout([$class: 'GitSCM',
          branches: [[name: '1.6']],
          userRemoteConfigs: [[credentialsId: 'github-credentials', url: 'https://github.com/akeneo/pim-enterprise-standard.git']]
        ])
        stash "pim_enterprise_dev"
-*/
     }
 
     parallel
